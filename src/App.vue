@@ -4,9 +4,18 @@
       <v-row>
         <v-col cols="12">
           <v-text-field
-            @keydown.enter.prevent="search"
-            v-model="searchInput"
-          ></v-text-field>
+            class="mt-n2"
+            solo-inverted
+            rounded
+            flat
+            hide-details
+            dense
+            color="black"
+            placeholder="Enter the game"
+            v-model="search"
+            @keydown.enter.prevent="filteredGames"
+          >
+          </v-text-field>
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -23,9 +32,9 @@ export default {
   name: "App",
 
   data: () => ({
-    gamesList: [],
     resultList: [],
-    searchInput: "",
+    gameList: [],
+    search: "",
   }),
 
   components: {
@@ -33,23 +42,47 @@ export default {
   },
 
   methods: {
-    search() {
-      let result = this.gamesList.filter((i) =>
-        i.title.toLowerCase().includes(this.searchInput)
-      );
-      result.forEach((i) => {
-        let steamId = i.steamUrl.slice(35);
-        i.image = `https://steamcdn-a.akamaihd.net/steam/apps/${steamId}/header.jpg`;
-      });
-      this.resultList = result;
+    filteredGames() {
+      if (this.search) {
+        let result = this.gameList.filter((i) =>
+          i.title.toLowerCase().includes(this.search)
+        );
+        if (result.length !== 0) {
+          result.forEach((i) => {
+            let steamId = i.steamUrl.slice(35);
+            i.image = `https://steamcdn-a.akamaihd.net/steam/apps/${steamId}/header.jpg`;
+          });
+          this.resultList = result;
+        } else {
+          this.resultList = [];
+          this.resultList.push({
+            title:
+              "The game that you are looking for not available on Nvidia Now yet!",
+            image:
+              "https://www.androidcentral.com/sites/androidcentral.com/files/styles/mediumplus/public/article_images/2016/07/sad-pikachu.jpg",
+            genres: [],
+            steamUrl: true,
+            show: true,
+          });
+        }
+      } else {
+        this.resultList = this.gameList;
+      }
     },
   },
 
   async created() {
-    let response = await this.$http.get(
+    let res = await this.$http.get(
       "https://static.nvidiagrid.net/supported-public-game-list/gfnpc.json?JSON"
     );
-    this.gamesList = response.body;
+
+    let result = res.body;
+    result.forEach((i) => {
+      let steamId = i.steamUrl.slice(35);
+      i.image = `https://steamcdn-a.akamaihd.net/steam/apps/${steamId}/header.jpg`;
+    });
+    this.resultList = result;
+    this.gameList = result;
   },
 };
 </script>

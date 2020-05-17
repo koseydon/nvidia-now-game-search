@@ -13,10 +13,10 @@
       </v-col>
       <v-col cols="12" lg="6" xl="7">
         <v-card-title
-          style="font-weight: bold; margin-bottom: -16px; margin-top: -16px;"
+          style="word-break: normal; font-weight: bold; margin-bottom: -16px; margin-top: -16px;"
           >{{ result.title }}</v-card-title
         >
-        <v-card-text style="margin-bottom: -16px;">
+        <v-card-text v-if="!result.show" style="margin-bottom: -16px;">
           Fully Optimized:
           <b>{{ this.isAvailable(result.isFullyOptimized) }}</b>
           <br />
@@ -29,7 +29,7 @@
           Genre(s):
           {{ result.genres.toString() }}
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions v-if="!result.show">
           <v-img
             id="steam-icon"
             style="margin-left: -8px; margin-bottom: -12px; cursor: pointer"
